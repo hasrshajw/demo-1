@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Landing Page</title>
+    <style>
+        /* General Body Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        /* Header and Navigation */
+        .header {
+            background-color: #003366;
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-bar {
+            width: 90%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1rem;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: url('https://images.pexels.com/photos/267885/pexels-photo-267885.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1') no-repeat center center/cover;
+            height: 100vh;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            flex-direction: column;
+            padding: 0 5%;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        .cta-button {
+            background-color: #ff9900;
+            color: #003366;
+            padding: 15px 30px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background-color: #e68a00;
+        }
+
+        /* Sections General Styling */
+        .section {
+            padding: 80px 5%;
+            text-align: center;
+        }
+
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #003366;
+        }
+
+        /* About Section */
+        #about {
+            background-color: white;
+        }
+
+        /* Programs Section */
+        .programs-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .program-card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 30%;
+            margin-bottom: 20px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .program-card h3 {
+            color: #003366;
+        }
+
+        /* Campus Life Section */
+        #campus-life {
+            background-color: white;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .gallery img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        /* Contact Section */
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .contact-form button {
+            width: 100%;
+            padding: 15px;
+            background-color: #003366;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #003366;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <nav class="nav-bar">
+            <div class="logo">University</div>
+            <div class="nav-links">
+                <a href="#about">About</a>
+                <a href="#programs">Programs</a>
+                <a href="#campus-life">Campus Life</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Your Future Starts Here</h1>
+            <p>Discover a world of knowledge and opportunity.</p>
+            <a href="#contact" class="cta-button">Apply Now</a>
+        </section>
+
+        <section id="about" class="section">
+            <h2>About Our University</h2>
+            <p>Founded in 1950, our university has been dedicated to providing top-tier education and fostering a community of learners and innovators. Our mission is to empower students to achieve their full potential and make a positive impact on the world.</p>
+        </section>
+
+        <section id="programs" class="section">
+            <h2>Our Programs</h2>
+            <div class="programs-container">
+                <div class="program-card">
+                    <h3>Science & Engineering</h3>
+                    <p>Explore the frontiers of technology and discovery with our cutting-edge science and engineering programs.</p>
+                </div>
+                <div class="program-card">
+                    <h3>Arts & Humanities</h3>
+                    <p>Delve into the rich tapestry of human culture, creativity, and history through our diverse arts and humanities courses.</p>
+                </div>
+                <div class="program-card">
+                    <h3>Business & Management</h3>
+                    <p>Develop the skills and knowledge to lead in the global marketplace with our comprehensive business programs.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="campus-life" class="section">
+            <h2>Campus Life</h2>
+            <div class="gallery">
+                <img src="https://images.pexels.com/photos/1370295/pexels-photo-1370295.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Library">
+                <img src="https://images.pexels.com/photos/207692/pexels-photo-207692.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Students studying">
+                <img src="https://images.pexels.com/photos/298217/pexels-photo-298217.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Graduation">
+            </div>
+        </section>
+
+        <section id="contact" class="section">
+            <h2>Contact Us</h2>
+            <form class="contact-form">
+                <input type="text" placeholder="Your Name" required>
+                <input type="email" placeholder="Your Email" required>
+                <textarea placeholder="Your Message" rows="5" required></textarea>
+                <button type="submit">Send Message</button>
+            </form>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 University. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
