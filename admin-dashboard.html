@@ -145,7 +145,6 @@
     <div id="toast"></div>
     <div id="loader"><div class="spinner"></div></div>
 
-    <!-- Modals needed for THIS page -->
     <div id="employee-modal" class="modal"></div>
     <div id="other-options-modal" class="modal"></div>
 
@@ -174,6 +173,22 @@
         const closeModal = (id) => document.getElementById(id).style.display = 'none';
         const formatDate = (date) => new Date(date).toISOString().split('T')[0];
         
+        /**
+         * [NEW] Gets the current date as a 'YYYY-MM-DD' string in the Asia/Kolkata timezone.
+         * This is crucial for ensuring the attendance resets at midnight India time.
+         */
+        function getIndiaDateString() {
+            const options = {
+                timeZone: 'Asia/Kolkata',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            };
+            // The 'en-CA' locale is a reliable way to get the YYYY-MM-DD format.
+            const formatter = new Intl.DateTimeFormat('en-CA', options);
+            return formatter.format(new Date());
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             try {
                 if (!firebaseConfig.apiKey || firebaseConfig.apiKey.includes("your-")) { throw new Error("Firebase config is not set."); }
@@ -232,7 +247,7 @@
             const desktopActions = `
                 <button class="btn btn-secondary" data-app-action="toggle-theme">
                     <svg id="theme-icon-sun-desktop" class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-1.414 8.486l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 011.414-1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" clip-rule="evenodd" /></svg>
-                    <svg id="theme-icon-moon-desktop" class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>
+                    <svg id="theme-icon-moon-desktop" class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="display:none;"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>
                     <span class="sr-only">Toggle Theme</span>
                 </button>
                 <button data-app-action="open-modal" data-modal-id="employee-modal" data-form-id="employee-form" class="btn btn-primary">
@@ -268,12 +283,12 @@
                     <span>Notifications</span>
                 </a>
                 <button class="btn btn-secondary" data-app-action="toggle-theme">
-                    <svg id="theme-icon-sun-mobile" class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1z..."></svg>
-                    <svg id="theme-icon-moon-mobile" class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001..."></svg>
+                    <svg id="theme-icon-sun-mobile" class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-1.414 8.486l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 011.414-1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" clip-rule="evenodd" /></svg>
+                    <svg id="theme-icon-moon-mobile" class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="display:none;"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>
                     <span>Toggle Theme</span>
                 </button>
                 <button class="btn btn-secondary" data-app-action="open-modal" data-modal-id="employee-modal" data-form-id="employee-form">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon-md" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1..."></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon-md" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
                     <span>Add Employee</span>
                 </button>`;
             updateThemeIcons(localStorage.getItem('theme') || 'light');
@@ -340,16 +355,16 @@
             } catch(err) { showToast("Error: Could not save employee.", "error"); } finally { hideLoader(); }
         }
 
-        // --- All other functions (toggleMenu, theme, attendance, summary, etc.) remain unchanged. ---
         function toggleMenu(show) { document.getElementById('mobile-menu').classList.toggle('active', show); document.getElementById('mobile-menu-overlay').classList.toggle('active', show); }
         function toggleProfileDropdown(show) { const dropdown = document.getElementById('profile-dropdown'); if (show === undefined) { dropdown.classList.toggle('active'); } else { dropdown.classList.toggle('active', show); } }
         function initializeTheme() { const theme = localStorage.getItem('theme') || 'light'; document.documentElement.setAttribute('data-theme', theme); updateThemeIcons(theme); }
         function toggleTheme() { const currentTheme = document.documentElement.getAttribute('data-theme'); const newTheme = currentTheme === 'light' ? 'dark' : 'light'; document.documentElement.setAttribute('data-theme', newTheme); localStorage.setItem('theme', newTheme); updateThemeIcons(newTheme); }
         function updateThemeIcons(theme) {['desktop', 'mobile'].forEach(device => { const sunIcon = document.getElementById(`theme-icon-sun-${device}`); const moonIcon = document.getElementById(`theme-icon-moon-${device}`); if(!sunIcon || !moonIcon) return; if (theme === 'light') { sunIcon.style.display = 'block'; moonIcon.style.display = 'none'; } else { sunIcon.style.display = 'none'; moonIcon.style.display = 'block'; } }); }
+        
         async function handleAttendanceClick(employeeId, status) {
             showLoader();
             try {
-                const today = formatDate(new Date());
+                const today = getIndiaDateString(); // Use timezone-aware date
                 await setDoc(doc(db, `employees/${employeeId}/attendance`, today), { status, date: today });
                 showToast(`Attendance marked as ${status}.`, "success");
                 const rowToHide = document.querySelector(`.employee-row[data-employee-row-id="${employeeId}"]`);
@@ -363,14 +378,16 @@
                 }
             } catch (err) { showToast("Error: Could not mark attendance.", "error"); } finally { hideLoader(); }
         }
+
         async function refreshAttendanceTracker(employees) {
-            const today = formatDate(new Date());
+            const today = getIndiaDateString(); // Use timezone-aware date
             const attendancePromises = employees.map(emp => getDoc(doc(db, `employees/${emp.id}/attendance`, today)));
             const attendanceDocs = await Promise.all(attendancePromises);
             const attendedTodayIds = new Set(attendanceDocs.filter(docSnap => docSnap.exists()).map(docSnap => docSnap.ref.parent.parent.id));
             const employeesToTrack = employees.filter(emp => !attendedTodayIds.has(emp.id));
             renderAttendanceTracker(employeesToTrack);
         }
+
         function renderAttendanceTracker(employeesToTrack) {
             const container = document.getElementById('attendance-tracker');
             if (!container) return;
@@ -380,15 +397,23 @@
             }
             container.innerHTML = employeesToTrack.map(emp => ` <div class="employee-row" data-employee-row-id="${emp.id}"> <div class="employee-name">${emp.name}</div> <div class="actions"> <button class="btn btn-success" data-app-action="mark-attendance" data-id="${emp.id}" data-status="present">Present</button> <button class="btn btn-ghost" data-app-action="open-other-options-modal" data-id="${emp.id}" data-name="${emp.name}">Other...</button> </div> </div>`).join('');
         }
+
         async function calculateAndRenderGlobalSummary(employees) {
             const container = document.getElementById('global-summary-card');
             if (!container) return;
-            const now = new Date();
-            const startDate = formatDate(new Date(now.getFullYear(), now.getMonth(), 1));
-            const endDate = formatDate(new Date(now.getFullYear(), now.getMonth() + 1, 0));
+            
+            const todayInIndia = getIndiaDateString(); // e.g., "2023-10-27"
+            const [year, month] = todayInIndia.split('-');
+            const startDate = `${year}-${month}-01`;
+            const lastDayOfMonth = new Date(year, parseInt(month, 10), 0).getDate();
+            const endDate = `${year}-${month}-${String(lastDayOfMonth).padStart(2, '0')}`;
+
             let totalEarnedThisMonth = 0, totalPaidThisMonth = 0;
             const employeeDataPromises = employees.map(async emp => {
-                const [attSnap, paySnap] = await Promise.all([ getDocs(query(collection(db, `employees/${emp.id}/attendance`), where('date', '>=', startDate), where('date', '<=', endDate))), getDocs(query(collection(db, `employees/${emp.id}/payments`), where('date', '>=', startDate), where('date', '<=', endDate))) ]);
+                const [attSnap, paySnap] = await Promise.all([ 
+                    getDocs(query(collection(db, `employees/${emp.id}/attendance`), where('date', '>=', startDate), where('date', '<=', endDate))), 
+                    getDocs(query(collection(db, `employees/${emp.id}/payments`), where('date', '>=', startDate), where('date', '<=', endDate))) 
+                ]);
                 const { totalEarned } = calculateFinancials(emp, attSnap.docs.map(d => d.data()), []);
                 const totalPaid = paySnap.docs.reduce((sum, p) => sum + (p.data()?.amount || 0), 0);
                 return { totalEarned, totalPaid };
@@ -398,6 +423,7 @@
             const totalDueThisMonth = totalEarnedThisMonth - totalPaidThisMonth;
             renderGlobalSummary({ totalDue: totalDueThisMonth, totalEarned: totalEarnedThisMonth, totalPaid: totalPaidThisMonth });
         }
+
         function renderGlobalSummary(data) {
             const container = document.getElementById('global-summary-card');
             if (!container) return;
@@ -413,6 +439,7 @@
                     <div class="global-stat"><div class="label">Total Paid to Employees</div><div class="value">₹${data.totalPaid.toFixed(2)}</div></div>
                 </div>`;
         }
+
         function calculateFinancials(employee, attendance, payments) {
             if (!employee || !Array.isArray(attendance) || !Array.isArray(payments)) { return { totalEarned: 0, dueAmount: 0 }; }
             let p=0,h=0,ph=0;
@@ -421,11 +448,21 @@
             const paid=payments.reduce((s,p)=>s+(p?.amount||0),0);
             return {totalEarned:earned, dueAmount:earned-paid};
         }
+
+        /**
+         * [REVISED] Schedules the page to reload at 12:01 AM in the Asia/Kolkata timezone.
+         */
         function scheduleDailyReset() {
-            const now = new Date(); let nextReload = new Date();
-            nextReload.setHours(24, 1, 0, 0); 
-            const timeout = nextReload.getTime() - now.getTime();
-            if (timeout > 0) setTimeout(() => { location.reload(); }, timeout);
+            const nowInIndia = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+            let nextReload = new Date(nowInIndia);
+            nextReload.setDate(nowInIndia.getDate() + 1);
+            nextReload.setHours(0, 1, 0, 0); // 12:01 AM
+            
+            const timeout = nextReload.getTime() - nowInIndia.getTime();
+            if (timeout > 0) {
+                console.log(`Page will auto-reload for daily reset at (India Time): ${nextReload.toLocaleString()}`);
+                setTimeout(() => { location.reload(); }, timeout);
+            }
         }
     </script>
 </body>
