@@ -31,19 +31,10 @@
         .app-header { height: 65px; background-color: hsla(0, 0%, 100%, 0.8); border-bottom: 1px solid var(--color-border); padding: 0 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px); transition: background-color 0.3s, border-color 0.3s; }
         [data-theme="dark"] .app-header { background-color: hsla(222, 47%, 11%, 0.8); }
         .nav-left, .nav-right { display: flex; align-items: center; gap: 16px; }
-        .nav-menu-btn { display: none; }
         .profile-menu { position: relative; }
         #profile-dropdown { display: none; position: absolute; top: calc(100% + 12px); right: 0; background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); width: 180px; padding: 8px; animation: modalOpen 0.2s; }
         #profile-dropdown.active { display: block; }
         #profile-dropdown .btn { width: 100%; justify-content: flex-start; }
-        #mobile-menu { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; background-color: var(--color-surface); transform: translateX(-100%); transition: transform 0.3s var(--ease-cubic); z-index: 1020; padding: 24px; box-shadow: var(--shadow-lg); }
-        #mobile-menu.active { transform: translateX(0); }
-        .mobile-menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .mobile-menu-title { font-size: 1.2rem; font-weight: 600; }
-        #mobile-menu-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(15, 23, 42, 0.6); z-index: 1010; }
-        #mobile-menu-overlay.active { display: block; }
-        #mobile-menu-content { display: flex; flex-direction: column; gap: 12px; }
-        #mobile-menu-content .btn { width: 100%; justify-content: flex-start; }
         .btn { padding: 10px 18px; border: 1px solid transparent; border-radius: var(--radius-md); cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: all 0.2s var(--ease-cubic); display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
         .btn:focus-visible { outline: var(--shadow-focus-ring) var(--color-primary-light); }
         .btn-primary { background-color: var(--color-primary); color: white; box-shadow: var(--shadow-md); }
@@ -51,8 +42,6 @@
         .btn-secondary:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); background-color: var(--color-primary-light); }
         .btn-success { background-color: var(--color-success); color: white; }
         .btn-danger { background-color: var(--color-danger); color: white; }
-        .btn-icon { background: none; border: none; padding: 10px; border-radius: 50%; cursor: pointer; color: var(--color-text-secondary); transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
-        .btn-icon:hover { color: var(--color-text-primary); background-color: var(--color-border); }
         .card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm); }
         .form-group { margin-bottom: 1.25rem; }
         .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--color-text-secondary); font-size: 0.9rem; }
@@ -161,6 +150,7 @@
         }
 
         async function initializeNotificationsView() {
+            document.getElementById('notifications-view').innerHTML = '';
             const hasApprovals = await renderAdminApprovalList();
             const hasLinks = await renderUnlinkedEmployees();
 
@@ -218,7 +208,6 @@
             return true;
         }
 
-        // --- All other functions (renderHeader, handleLogout, bindEventListeners, modal logic, etc.) should be copied here ---
         function renderHeader() {
             const header = document.getElementById('app-header');
             header.innerHTML = `
@@ -229,10 +218,6 @@
                     <div class="profile-menu">
                         <img src="${currentUserProfile.photoURL}" alt="User Profile" class="user-avatar" data-app-action="toggle-profile-dropdown">
                         <div id="profile-dropdown">
-                            <a href="notifications.html" class="btn btn-secondary">
-                               <svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" /></svg>
-                               Notifications
-                            </a>
                             <button class="btn btn-secondary" data-app-action="logout">
                                 <svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" /></svg>
                                 Logout
@@ -242,12 +227,14 @@
                 </div>`;
             initializeTheme();
         }
+
         function bindEventListeners() {
              document.body.addEventListener('click', async (e) => {
                 const target = e.target;
                 const appAction = target.closest('[data-app-action]');
                 if (!appAction?.dataset?.appAction) { if (!target.closest('.profile-menu')) toggleProfileDropdown(false); return; }
-                e.preventDefault();
+                if (appAction.tagName !== 'A' || !appAction.href) e.preventDefault();
+                
                 const action = appAction.dataset.appAction;
                 switch(action) {
                     case 'logout': await signOut(auth); break;
@@ -261,14 +248,27 @@
             });
             document.getElementById('set-salary-form').addEventListener('submit', handleSetSalarySubmit);
         }
+
         function toggleProfileDropdown(show) { const dropdown = document.getElementById('profile-dropdown'); if (show === undefined) { dropdown.classList.toggle('active'); } else { dropdown.classList.toggle('active', show); } }
         function initializeTheme() { const theme = localStorage.getItem('theme') || 'light'; document.documentElement.setAttribute('data-theme', theme); }
+        
         function renderAppShellModals() {
             document.getElementById('set-salary-modal').innerHTML = `<div class="modal-content"><span class="close-btn" data-app-action="close-modal" data-modal-id="set-salary-modal">×</span><h2>Set Salary for <strong id="new-employee-name-modal"></strong></h2><form id="set-salary-form"><input type="hidden" id="new-employee-uid"><div class="form-group"><label for="new-employee-daily-salary">Daily Salary (INR)</label><input type="number" id="new-employee-daily-salary" required min="0" step="1"></div><button type="submit" class="btn btn-primary" style="width:100%">Confirm & Accept</button></form></div>`;
             document.getElementById('link-user-modal').innerHTML = `<div class="modal-content"></div>`;
         }
+
         function handleAcceptUserClick(uid, name) { document.getElementById('new-employee-name-modal').textContent = name; document.getElementById('new-employee-uid').value = uid; document.getElementById('set-salary-form').reset(); openModal('set-salary-modal'); }
-        async function handleDenyUser(uid) { if (!confirm("Are you sure you want to deny this user? This cannot be undone.")) return; showLoader(); try { await setDoc(doc(db, "users", uid), { status: 'denied' }, { merge: true }); showToast("User has been denied.", "success"); await initializeNotificationsView(); } catch (e) { showToast("Could not deny user.", "error"); } finally { hideLoader(); } }
+        
+        async function handleDenyUser(uid) { 
+            if (!confirm("Are you sure you want to deny this user? This cannot be undone.")) return; 
+            showLoader(); 
+            try { 
+                await setDoc(doc(db, "users", uid), { status: 'denied' }, { merge: true }); 
+                showToast("User has been denied.", "success"); 
+                await initializeNotificationsView(); 
+            } catch (e) { showToast("Could not deny user.", "error"); } finally { hideLoader(); } 
+        }
+        
         async function handleSetSalarySubmit(e) {
             e.preventDefault(); showLoader();
             const uid = document.getElementById('new-employee-uid').value;
@@ -282,8 +282,53 @@
                 await initializeNotificationsView();
             } catch (err) { showToast("Could not accept user.", "error"); } finally { hideLoader(); }
         }
-        function handleLinkUserClick(employeeId, employeeName) { /* ... same as before ... */ }
-        // The link user logic could also be added here if needed, following the same pattern
+
+        // --- ADDED FUNCTIONS FOR LINKING ---
+        async function handleLinkUserClick(employeeId, employeeName) {
+            const modal = document.getElementById('link-user-modal');
+            showLoader();
+            try {
+                const usersQuery = query(collection(db, "users"), where("status", "==", "pending"));
+                const pendingUsersSnap = await getDocs(usersQuery);
+                const availableUsers = pendingUsersSnap.docs.map(d => ({id: d.id, ...d.data()}));
+                if (availableUsers.length === 0) {
+                    showToast("No pending users available to link.", "error");
+                    return;
+                }
+                const userOptions = availableUsers.map(user => `<option value="${user.id}">${user.displayName} (${user.email})</option>`).join('');
+                modal.innerHTML = `<div class="modal-content"><span class="close-btn" data-app-action="close-modal" data-modal-id="link-user-modal">×</span><h2>Link Account for <strong>${employeeName}</strong></h2><form id="link-user-form"><input type="hidden" id="link-employee-id" value="${employeeId}"><div class="form-group"><label for="link-user-select">Select the Google User to Link</label><select id="link-user-select" required><option value="">-- Select a Pending User --</option>${userOptions}</select></div><button type="submit" class="btn btn-primary" style="width:100%">Confirm & Link Account</button></form></div>`;
+                document.getElementById('link-user-form').addEventListener('submit', handleLinkUserFormSubmit);
+                openModal('link-user-modal');
+            } catch (err) {
+                showToast("Could not load pending users.", "error");
+                console.error(err);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function handleLinkUserFormSubmit(e) {
+            e.preventDefault();
+            const employeeId = document.getElementById('link-employee-id').value;
+            const userUID = document.getElementById('link-user-select').value;
+            if (!employeeId || !userUID) { showToast("Please select a user to link.", "error"); return; }
+            showLoader();
+            try {
+                const batch = writeBatch(db);
+                batch.update(doc(db, "employees", employeeId), { userUID: userUID });
+                batch.update(doc(db, "users", userUID), { status: 'approved', role: 'employee', employeeId: employeeId });
+                await batch.commit();
+                showToast("Account linked successfully!", "success");
+                closeModal('link-user-modal');
+                await initializeNotificationsView();
+            } catch (err) {
+                console.error("Error linking account:", err);
+                showToast("Failed to link account.", "error");
+            } finally {
+                hideLoader();
+            }
+        }
+
     </script>
 </body>
 </html>
